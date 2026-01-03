@@ -1,0 +1,82 @@
+# docker-compose -f docker-compose.dev.yml down -v
+# docker-compose -f docker-compose.dev.yml up -d
+
+services:
+  # === Database ===
+  postgres:
+    image: postgres:16-alpine
+    container_name: postgres-dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - postgres-dev-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # === Directus ===
+  directus:
+    image: directus/directus:latest
+    container_name: directus-dev
+    restart: unless-stopped
+    env_file:
+      - .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./directus/directus/uploads:/directus/uploads
+      - ./directus/directus/extensions:/directus/extensions
+      - ./directus/directus/migrations:/directus/migrations
+    environment:
+      # Переопределяем переменные специфичные для Directus
+      KEY: ${DIRECTUS_KEY} #для шифрования данных в бд directus
+      SECRET: ${DIRECTUS_SECRET}
+      PORT: ${DIRECTUS_PORT}
+      PUBLIC_URL: http://localhost:8055
+
+      DB_CLIENT: pg
+      DB_HOST: postgres # ← directus внутри docker сети должен обращаться к postgres внутри сети контейнеров
+      DB_PORT: ${DB_PORT}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_DATABASE: ${DB_NAME}
+      DB_SCHEMA: public
+
+      ADMIN_EMAIL: ${ADMIN_EMAIL}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+
+      WEBSOCKETS_ENABLED: ${WEBSOCKETS_ENABLED}
+
+      CORS_ENABLED: ${CORS_ENABLED}
+      CORS_ORIGIN: ${CORS_ORIGIN}
+
+      REFRESH_TOKEN_COOKIE_SECURE: ${REFRESH_TOKEN_COOKIE_SECURE}
+      REFRESH_TOKEN_COOKIE_SAME_SITE: ${REFRESH_TOKEN_COOKIE_SAME_SITE}
+      REFRESH_TOKEN_DOMAIN: ${REFRESH_TOKEN_COOKIE_DOMAIN}
+
+      SESSION_COOKIE_SECURE: ${SESSION_COOKIE_SECURE}
+      SESSION_COOKIE_SAME_SITE: ${SESSION_COOKIE_SAME_SITE}
+      SESSION_COOKIE_DOMAIN: ${SESSION_COOKIE_DOMAIN}
+
+      EXTENSIONS_PATH: ${EXTENSIONS_PATH}
+      EXTENSIONS_AUTO_RELOAD: ${EXTENSIONS_AUTO_RELOAD}
+
+      CONTENT_SECURITY_POLICY_DIRECTIVES__FRAME_SRC: ${CONTENT_SECURITY_POLICY_DIRECTIVES__FRAME_SRC}
+
+    ports:
+      - "8055:8055"
+
+volumes:
+  postgres-dev-data:
+    driver: local
+networks:
+  app-net:
+    driver: bridge
