@@ -1,19 +1,33 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { DepartmentsService } from './departments.service';
-import { CreateDepartmentDto } from './dto/create-department.dto';
-import { UpdateDepartmentDto } from './dto/update-department.dto';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
+import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
+import { DepartmentsService } from './departments.service';
+import { CreateDepartmentsDto } from 'src/generated/nestjs-dto/create-departments.dto';
+import { UpdateDepartmentsDto } from 'src/generated/nestjs-dto/update-departments.dto';
+import { DepartmentsDto } from 'src/generated/nestjs-dto/departments.dto';
+
+@ApiTags('departments')
 @Controller('departments')
 export class DepartmentsController {
   constructor(private readonly departmentsService: DepartmentsService) {}
 
   @Post()
-  create(@Body() createDepartmentDto: CreateDepartmentDto) {
+  @ApiCreatedResponse({ type: DepartmentsDto })
+  create(@Body() createDepartmentDto: CreateDepartmentsDto) {
     return this.departmentsService.create(createDepartmentDto);
   }
 
   @Get()
-  findAll() {
+  @ApiOkResponse({ type: [DepartmentsDto] })
+  findAll(): Promise<DepartmentsDto[]> {
     return this.departmentsService.findAll();
   }
 
@@ -23,7 +37,10 @@ export class DepartmentsController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateDepartmentDto: UpdateDepartmentDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateDepartmentDto: UpdateDepartmentsDto,
+  ) {
     return this.departmentsService.update(+id, updateDepartmentDto);
   }
 

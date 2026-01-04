@@ -1,9 +1,12 @@
 model departments {
-  id          String   @id
+  /// @DtoCreateHidden
+  id          String   @id @default(uuid()) @db.Uuid  
   name        String
   shortName   String?
   description String?
   metadata    Json?
+  /// @DtoCreateHidden
   createdAt   DateTime @default(now())
+  /// @DtoCreateHidden
   updatedAt   DateTime @updatedAt
 }

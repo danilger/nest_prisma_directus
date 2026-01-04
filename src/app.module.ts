@@ -1,12 +1,24 @@
+import { CacheModule } from '@nestjs/cache-manager';
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { DepartmentsService } from './departments/departments.service';
+import { ConfigModule } from '@nestjs/config';
 import { DepartmentsModule } from './departments/departments.module';
+import { DepartmentsService } from './departments/departments.service';
+import { DirectusService } from './directus/directus.service';
+import { PrismaService } from './prisma.service';
 
 @Module({
-  imports: [DepartmentsModule],
-  controllers: [AppController],
-  providers: [AppService, DepartmentsService],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true, // Делаем ConfigModule глобальным
+    }),
+    // In-memory кеш с TTL 15 минут
+    CacheModule.register({
+      isGlobal: true, // Делаем глобальным для использования во всем приложении
+      ttl: 15 * 60 * 1000, // 15 минут в миллисекундах
+      max: 1000, // Максимальное количество элементов в кеше
+    }),
+    DepartmentsModule,
+  ],
+  providers: [DepartmentsService, DirectusService, PrismaService],
 })
 export class AppModule {}

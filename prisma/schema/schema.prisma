@@ -1,7 +1,17 @@
+
+// https://www.npmjs.com/package/@brakebein/prisma-generator-nestjs-dto дока для генератора dto
+
+
 generator client {
   provider     = "prisma-client"
   output       = "../../src/generated/prisma"
   moduleFormat = "cjs"
+}
+
+generator nestjsDto {
+  provider = "prisma-generator-nestjs-dto"
+  output   = "../../src/generated/nestjs-dto"
+  classValidation = true
 }
 
 datasource db {
