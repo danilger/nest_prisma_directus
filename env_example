@@ -1,0 +1,54 @@
+PORT=5000
+
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/app_db"
+
+# ============================================
+# POSTGRESQL DATABASE
+# ============================================
+DB_HOST=postgres  
+DB_HOST_DEV=localhost  
+DB_PORT=5432
+DB_NAME=app_db
+DB_USER=postgres
+DB_PASSWORD=postgres
+
+
+# ============================================
+# DIRECTUS CMS
+# ============================================
+# Основные настройки
+DIRECTUS_PORT=8055
+DIRECTUS_KEY=superkey_change_this_in_production
+DIRECTUS_SECRET=your_super_secret_jwt_key_min_32_chars_long_change_this_in_production
+
+# Публичный URL
+PUBLIC_URL= http://localhost:8055/cms 
+
+# Администратор
+ADMIN_EMAIL=admin@example.com
+ADMIN_PASSWORD=admin1234
+
+# WebSockets
+WEBSOCKETS_ENABLED=true
+
+# CORS настройки
+CORS_ENABLED=true
+CORS_ORIGIN=http://localhost,http://localhost:3000,http://localhost:5173,http://127.0.0.1,http://192.168.0.33,http://192.168.0.33:3000,http://192.168.0.33:5173
+
+# Cookie настройки для JWT токенов используется в directus (критично!)
+REFRESH_TOKEN_COOKIE_NAME=refresh_token
+REFRESH_TOKEN_COOKIE_SECURE=false
+REFRESH_TOKEN_COOKIE_SAME_SITE=lax
+REFRESH_TOKEN_DOMAIN=localhost
+
+# Session Cookie
+SESSION_COOKIE_SECURE=false
+SESSION_COOKIE_SAME_SITE=lax
+SESSION_COOKIE_DOMAIN=localhost
+
+# Extensions
+EXTENSIONS_PATH=/directus/extensions
+EXTENSIONS_AUTO_RELOAD=true
+
+# Content Security Policy
+CONTENT_SECURITY_POLICY_DIRECTIVES__FRAME_SRC="'self' http://localhost:3000 http://localhost:5173 http://192.168.0.33 http://192.168.0.33:3000 http://192.168.0.33:5173"
